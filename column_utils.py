@@ -12,9 +12,98 @@ from pyspark.sql.functions import (
     col,
     when,
     date_format, 
-    to_date
+    to_date,
+    hour,
+    quarter,
+    dayofweek,
+    to_timestamp
 )
 from pyspark.sql.window import Window
+
+
+
+# =========================================================
+# 1. EXTRACT HOUR
+# =========================================================
+def add_hour(df: DataFrame, column_name: str, new_column: str = "hour"):
+    """
+    Extracts hour from timestamp
+
+    Example:
+    2026-05-20 14:35:10 → 14
+    """
+
+    return df.withColumn(
+        new_column,
+        hour(col(column_name))
+    )
+
+
+
+# =========================================================
+# 2. EXTRACT QUARTER
+# =========================================================
+def add_quarter(df: DataFrame, column_name: str, new_column: str = "quarter"):
+    """
+    Extracts quarter from date
+
+    Example:
+    2026-05-20 → 2
+    """
+
+    return df.withColumn(
+        new_column,
+        quarter(col(column_name))
+    )
+
+
+# =========================================================
+# 3. EXTRACT WEEKDAY NUMBER
+# =========================================================
+def add_weekday(df: DataFrame, column_name: str, new_column: str = "weekday"):
+    """
+    Returns weekday number
+
+    Spark:
+    1 = Sunday
+    2 = Monday
+    ...
+    7 = Saturday
+    """
+
+    return df.withColumn(
+        new_column,
+        dayofweek(col(column_name))
+    )
+
+
+# =========================================================
+# 4. EXTRACT WEEKDAY NAME
+# =========================================================
+def add_weekday_name(df: DataFrame, column_name: str, new_column: str = "weekday_name"):
+    """
+    Returns weekday name
+
+    Example:
+    Monday, Tuesday
+    """
+
+    return df.withColumn(
+        new_column,
+        date_format(col(column_name), "EEE")
+    )
+
+
+
+def add_year_month_key(df: DataFrame, column_name: str, new_column: str = "year_month"):
+    """
+    Returns YYYY-MM format (string)
+    """
+
+    return df.withColumn(
+        new_column,
+        date_format(to_date(col(column_name)), "yyyy-MM")
+    )
 
 
 def add_date_key(df: DataFrame, column_name: str, new_column: str = "date_key"):
