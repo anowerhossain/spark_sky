@@ -88,3 +88,17 @@ def add_case_when_column(
         expr = expr.otherwise(default_value)
 
     return df.withColumn(column_name, expr)
+
+
+
+
+def mask_column(df: DataFrame, column_name: str, visible_chars: int = 2):
+    return df.withColumn(
+        column_name,
+        concat(
+            substring(col(column_name), 1, visible_chars),
+            lit("*****")
+        )
+    )
+
+
