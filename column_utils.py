@@ -117,3 +117,16 @@ def remove_suffix(df: DataFrame, column_name: str, suffix: str):
     )
 
 
+def keep_numeric_only(df: DataFrame, column_name: str):
+    return df.withColumn(
+        column_name,
+        regexp_replace(col(column_name), "[^0-9]", "")
+    )
+
+
+def keep_alpha_only(df: DataFrame, column_name: str):
+    return df.withColumn(
+        column_name,
+        regexp_replace(col(column_name), "[^a-zA-Z]", "")
+    )
+
