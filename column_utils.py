@@ -200,27 +200,20 @@ def add_fiscal_year_label(
     fiscal_start_month: int = 1,
     new_column: str = "fiscal_year_label"
 ):
-    """
-    Creates formatted fiscal year label.
 
-    Example:
-    --------
-    FY2025
-    FY2026
-    """
+    date_col = to_date(col(column_name))  # safe conversion
 
     fiscal_year_col = when(
-        month(col(column_name)) >= fiscal_start_month,
-        year(col(column_name))
+        month(date_col) >= fiscal_start_month,
+        year(date_col)
     ).otherwise(
-        year(col(column_name)) - 1
+        year(date_col) - 1
     )
 
     return df.withColumn(
         new_column,
         concat(lit("FY"), fiscal_year_col.cast("string"))
     )
-
 
 # Example:
 # df = add_fiscal_year_label(df, "transaction_date", fiscal_start_month=4)
