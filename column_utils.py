@@ -288,7 +288,7 @@ def add_surrogate_key(df: DataFrame, column_name: str = "surrogate_id"):
     """
     Distributed unique ID (NOT sequential)
     """
-    return df.withColumn(column_name, monotonically_increasing_id())
+    return df.withColumn(column_name, monotonically_increasing_id()+1)
 
 
 
