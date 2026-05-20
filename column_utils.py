@@ -102,3 +102,18 @@ def mask_column(df: DataFrame, column_name: str, visible_chars: int = 2):
     )
 
 
+
+def remove_prefix(df: DataFrame, column_name: str, prefix: str):
+    return df.withColumn(
+        column_name,
+        regexp_replace(col(column_name), f"^{prefix}", "")
+    )
+
+
+def remove_suffix(df: DataFrame, column_name: str, suffix: str):
+    return df.withColumn(
+        column_name,
+        regexp_replace(col(column_name), f"{suffix}$", "")
+    )
+
+
