@@ -146,3 +146,20 @@ def split_column(df: DataFrame, column_name: str, delimiter: str, new_columns: l
 
 # Example:
 # df = split_column(df, "full_name", " ", ["first_name", "last_name"])
+
+
+
+def pad_left(df: DataFrame, column_name: str, length_val: int, pad_char: str = "0"):
+    return df.withColumn(
+        column_name,
+        lpad(col(column_name), length_val, pad_char)
+    )
+
+
+
+
+def pad_right(df: DataFrame, column_name: str, length_val: int, pad_char: str = " "):
+    return df.withColumn(
+        column_name,
+        rpad(col(column_name), length_val, pad_char)
+    )
