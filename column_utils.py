@@ -16,7 +16,11 @@ from pyspark.sql.functions import (
     hour,
     quarter,
     dayofweek,
-    to_timestamp
+    to_timestamp,
+    concat,
+    lit,
+    month,
+    year
 )
 from pyspark.sql.window import Window
 
@@ -93,6 +97,133 @@ def add_weekday_name(df: DataFrame, column_name: str, new_column: str = "weekday
         date_format(col(column_name), "EEE")
     )
 
+
+# =========================================================
+# FISCAL QUARTER
+# =========================================================
+def add_fiscal_quarter(
+    df: DataFrame,
+    column_name: str,
+    fiscal_start_month: int = 1,
+    new_column: str = "fiscal_quarter"
+):
+    """
+    Adds fiscal quarter based on custom fiscal year start month.
+
+    Parameters:
+    -----------
+    fiscal_start_month:
+        1  = January
+        4  = April
+        7  = July
+        etc.
+
+    Example:
+    --------
+    fiscal_start_month = 4
+
+    Apr-Jun  -> Q1
+    Jul-Sep  -> Q2
+    Oct-Dec  -> Q3
+    Jan-Mar  -> Q4
+    """
+
+    shifted_month = (
+        ((month(col(column_name)) - fiscal_start_month + 12) % 12) + 1
+    )
+
+    return df.withColumn(
+        new_column,
+        floor((shifted_month - 1) / 3) + 1
+    )
+
+
+
+# =========================================================
+# FISCAL YEAR
+# =========================================================
+def add_fiscal_year(
+    df: DataFrame,
+    column_name: str,
+    fiscal_start_month: int = 1,
+    new_column: str = "fiscal_year"
+):
+    """
+    Adds fiscal year based on custom fiscal start month.
+
+    Parameters:
+    -----------
+    fiscal_start_month:
+        1  = January
+        4  = April
+        7  = July
+        etc.
+
+    Logic:
+    ------
+    If month >= fiscal_start_month:
+        fiscal_year = current year
+    else:
+        fiscal_year = previous year
+
+    Example:
+    --------
+    fiscal_start_month = 4
+
+    Date         Fiscal Year
+    ----------   -----------
+    2026-03-15   2025
+    2026-04-01   2026
+    """
+
+    return df.withColumn(
+        new_column,
+        when(
+            month(col(column_name)) >= fiscal_start_month,
+            year(col(column_name))
+        ).otherwise(
+            year(col(column_name)) - 1
+        )
+    )
+
+
+# Example:
+# df = add_fiscal_year(df, "transaction_date", fiscal_start_month=4)
+
+
+# =========================================================
+# FISCAL YEAR LABEL (OPTIONAL)
+# =========================================================
+def add_fiscal_year_label(
+    df: DataFrame,
+    column_name: str,
+    fiscal_start_month: int = 1,
+    new_column: str = "fiscal_year_label"
+):
+    """
+    Creates formatted fiscal year label.
+
+    Example:
+    --------
+    FY2025
+    FY2026
+    """
+
+    fiscal_year_col = when(
+        month(col(column_name)) >= fiscal_start_month,
+        year(col(column_name))
+    ).otherwise(
+        year(col(column_name)) - 1
+    )
+
+    return df.withColumn(
+        new_column,
+        concat(lit("FY"), fiscal_year_col.cast("string"))
+    )
+
+
+# Example:
+# df = add_fiscal_year_label(df, "transaction_date", fiscal_start_month=4)
 
 
 def add_year_month_key(df: DataFrame, column_name: str, new_column: str = "year_month"):
