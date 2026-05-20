@@ -10,9 +10,48 @@ from pyspark.sql.functions import (
     sha2,
     concat_ws,
     col,
-    when
+    when,
+    date_format, 
+    to_date
 )
 from pyspark.sql.window import Window
+
+
+def add_date_key(df: DataFrame, column_name: str, new_column: str = "date_key"):
+    """
+    Converts date → integer key format: YYYYMMDD
+
+    Example:
+    2026-05-20 → 20260520
+    """
+
+    return df.withColumn(
+        new_column,
+        date_format(to_date(col(column_name)), "yyyyMMdd").cast("int")
+    )
+
+
+def add_month_key(df: DataFrame, column_name: str, new_column: str = "month_key"):
+    """
+    Converts date → YYYYMM format
+
+    Example:
+    2026-05-20 → 202605
+    """
+
+    return df.withColumn(
+        new_column,
+        date_format(to_date(col(column_name)), "yyyyMM").cast("int")
+    )
+
+
+
+def add_year_key(df: DataFrame, column_name: str, new_column: str = "year"):
+    return df.withColumn(
+        new_column,
+        date_format(to_date(col(column_name)), "yyyy").cast("int")
+    )
+
 
 
 
