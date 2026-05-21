@@ -66,6 +66,7 @@ def running_total(
     value_col: str,
     order: str = "asc"
 ):
+```
 
 | Parameter      | Type      | Description                                           |
 | -------------- | --------- | ----------------------------------------------------- |
