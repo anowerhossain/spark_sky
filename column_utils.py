@@ -308,7 +308,7 @@ def add_flag(df: DataFrame, column_name: str, condition):
   
 
 def add_incremental_id(df: DataFrame, column_name: str = "increment_id"):
-    return df.withColumn(column_name, monotonically_increasing_id())
+    return df.withColumn(column_name, monotonically_increasing_id()+1)
 
 
 def add_case_when_column(
