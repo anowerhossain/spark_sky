@@ -2,6 +2,7 @@
 
 ## AnalyticalUtils
 
+- The add_rank function is a reusable PySpark utility used to generate ranked values within partitions of a DataFrame.
 ### 
 ```python
 def add_rank(
@@ -11,3 +12,9 @@ def add_rank(
     order: str = "desc"
 ):
 ```
+| Parameter        | Type      | Description |
+|----------------|----------|-------------|
+| df             | DataFrame | Input Spark DataFrame |
+| partition_cols | list      | Columns used to define partition/grouping |
+| order_col      | str       | Column used to determine ranking order |
+| order          | str       | Sorting order: `"asc"` or `"desc"` (default: `"desc"`) |
